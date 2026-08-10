@@ -58,19 +58,19 @@ MODEL_CATALOG: Dict[str, List[str]] = {
         "Tilt", "10 Band Graphic", "Cali Q Graphic", "Acoustic Sim"
     ],
     "Modulation": [
-        "None", "Pitch Ring Mod", "Optical Trem", "60s Bias Trem", "Tremolo/Autopan", 
+        "None", "Optical Trem", "60s Bias Trem", "Tremolo/Autopan", 
         "Harmonic Tremolo", "Bleat Chop Trem", "Script Mod Phase", "Pebble Phaser", 
         "Ubiquitous Vibe", "FlexoVibe", "Deluxe Phaser", "Gray Flanger", "Harmonic Flanger", 
         "Courtesan Flange", "Dynamix Flanger", "Chorus", "70s Chorus", "PlastiChorus", 
-        "Ampeg Liquifier Chorus", "Trinity Chorus", "4-Voice Chorus", "Bubble Vibrato", 
-        "Vibe Rotary", "122 Rotary", "145 Rotary", "Triple Rotary", "Retro Reel", 
+        "Ampeg Liquifier Chorus", "4-Voice Chorus", "Bubble Vibrato", 
+        "Retro Reel", 
         "Double Take", "Poly Detune", "AM Ring Mod"
     ],
     "Delay": [
         "None", "Simple Delay", 
-        "Mod/Chorus Echo", "Dual Delay", "Multitap 4", "Multitap 6",
+        "Mod/Chorus Echo",
         "Ducked Delay", "Reverse Delay", "Vintage Digital", "Vintage Swell", "Pitch Echo", 
-        "Transistor Tape", "Cosmos Echo", "Harmony Delay", "Bucket Brigade", "Adriatic Delay", 
+        "Transistor Tape", "Cosmos Echo", "Bucket Brigade", "Adriatic Delay", 
         "Adriatic Swell", "Elephant Man", "Multi Pass", "Heliosphere", "Poly Sustain", 
         "Glitch Delay", "Euclidean Delay", "ADT", "Crisscross", "Tesselator", "Ratchet"
     ],
@@ -81,7 +81,7 @@ MODEL_CATALOG: Dict[str, List[str]] = {
     ],
     "Pitch_Synth": [
         "None", "Pitch Wham", "Twin Harmony", "Simple Pitch", "Dual Pitch", "Boctaver", 
-        "3 OSC Synth", "Poly Pitch", "Poly Wham", "Poly Capo", "12 String", "3 Note Generator", 
+        "Poly Pitch", "Poly Wham", "Poly Capo", "12 String", "3 Note Generator", 
         "4 OSC Generator"
     ],
     "Filter": [
@@ -149,9 +149,6 @@ BLOCK_TYPE_MAP: Dict[str, int] = {
     "Volume_Pan": 11
 }
 
-# -------------------------------------------------------------
-# 파라미터 스키마 템플릿 (알려지지 않은 모델의 예측을 위한 Fallback)
-# -------------------------------------------------------------
 DEFAULT_DRIVE_KNOBS = {
     "Gain": {"min": 0.0, "max": 1.0, "default": 0.5},
     "Tone": {"min": 0.0, "max": 1.0, "default": 0.5},
@@ -184,6 +181,55 @@ DEFAULT_REVERB_KNOBS = {
     "Predelay": {"min": 0.0, "max": 0.2, "default": 0.02},
     "Mix": {"min": 0.0, "max": 1.0, "default": 0.3},
 }
+DEFAULT_DYNAMICS_KNOBS = {
+    "Threshold": {"min": -60.0, "max": 0.0, "default": -20.0},
+    "Ratio": {"min": 1.0, "max": 20.0, "default": 4.0},
+    "Gain": {"min": 0.0, "max": 1.0, "default": 0.5},
+}
+DEFAULT_EQ_KNOBS = {
+    "Low": {"min": -12.0, "max": 12.0, "default": 0.0},
+    "Mid": {"min": -12.0, "max": 12.0, "default": 0.0},
+    "High": {"min": -12.0, "max": 12.0, "default": 0.0},
+    "Level": {"min": -12.0, "max": 12.0, "default": 0.0},
+}
+DEFAULT_MODULATION_KNOBS = {
+    "Speed": {"min": 0.0, "max": 1.0, "default": 0.5},
+    "Depth": {"min": 0.0, "max": 1.0, "default": 0.5},
+    "Mix": {"min": 0.0, "max": 1.0, "default": 0.5},
+}
+DEFAULT_PITCH_KNOBS = {
+    "Pitch": {"min": -12.0, "max": 12.0, "default": 0.0},
+    "Mix": {"min": 0.0, "max": 1.0, "default": 0.5},
+    "Level": {"min": 0.0, "max": 1.0, "default": 0.5},
+}
+DEFAULT_FILTER_KNOBS = {
+    "Frequency": {"min": 20.0, "max": 10000.0, "default": 1000.0},
+    "Q": {"min": 0.1, "max": 10.0, "default": 1.0},
+    "Gain": {"min": -12.0, "max": 12.0, "default": 0.0},
+}
+DEFAULT_WAH_KNOBS = {
+    "Position": {"min": 0.0, "max": 1.0, "default": 0.5},
+    "Mix": {"min": 0.0, "max": 1.0, "default": 1.0},
+}
+DEFAULT_VOLUME_PAN_KNOBS = {
+    "Volume": {"min": 0.0, "max": 1.0, "default": 1.0},
+    "Pan": {"min": -1.0, "max": 1.0, "default": 0.0},
+}
+
+DEFAULT_CATEGORY_KNOBS: Dict[str, Dict[str, Dict[str, Any]]] = {
+    "Distortion": DEFAULT_DRIVE_KNOBS,
+    "Amp": DEFAULT_AMP_KNOBS,
+    "Cab": DEFAULT_CAB_KNOBS,
+    "Delay": DEFAULT_DELAY_KNOBS,
+    "Reverb": DEFAULT_REVERB_KNOBS,
+    "Dynamics": DEFAULT_DYNAMICS_KNOBS,
+    "EQ": DEFAULT_EQ_KNOBS,
+    "Modulation": DEFAULT_MODULATION_KNOBS,
+    "Pitch_Synth": DEFAULT_PITCH_KNOBS,
+    "Filter": DEFAULT_FILTER_KNOBS,
+    "Wah": DEFAULT_WAH_KNOBS,
+    "Volume_Pan": DEFAULT_VOLUME_PAN_KNOBS,
+}
 
 # -------------------------------------------------------------
 # 명시적으로 정의된 특정 모델별 노브 범위 및 파라미터 (De-normalization용)
@@ -212,9 +258,50 @@ KNOWN_KNOB_SCHEMA: Dict[str, Dict[str, Dict[str, Any]]] = {
     "Cave": DEFAULT_REVERB_KNOBS,
 }
 
-# 기본 딕셔너리를 활용하여, KNOWN_KNOB_SCHEMA에 없는 모델 이름이 호출될 경우
-# 빈 파라미터 딕셔너리를 반환하여 에러를 방지합니다.
-KNOB_SCHEMA = defaultdict(dict, KNOWN_KNOB_SCHEMA)
+# 모델명 -> 카테고리 역매핑 매핑 딕셔너리
+MODEL_TO_CATEGORY: Dict[str, str] = {}
+for _category_name, _model_list in MODEL_CATALOG.items():
+    for _m in _model_list:
+        if _m != "None":
+            MODEL_TO_CATEGORY[_m] = _category_name
+
+
+class KnobSchemaDict(dict):
+    """
+    KNOWN_KNOB_SCHEMA에 없는 Helix Native 모델도 카테고리별 기본 노브 스키마(DEFAULT_CATEGORY_KNOBS)를
+    자동 Fallback으로 연동하여 모든 모델에 대해 노브 파라미터가 유효하게 작동하도록 하는 커스텀 딕셔너리 클래스
+    """
+    def _resolve(self, key: str) -> Dict[str, Dict[str, Any]]:
+        if key in KNOWN_KNOB_SCHEMA:
+            return KNOWN_KNOB_SCHEMA[key]
+        category = MODEL_TO_CATEGORY.get(key)
+        if category and category in DEFAULT_CATEGORY_KNOBS:
+            return DEFAULT_CATEGORY_KNOBS[category]
+        return {}
+
+    def __getitem__(self, key: str) -> Dict[str, Dict[str, Any]]:
+        res = self._resolve(key)
+        if res or key == "None":
+            return res
+        return super().get(key, {})
+
+    def get(self, key: str, default=None) -> Dict[str, Dict[str, Any]]:
+        if key == "None":
+            return {}
+        res = self._resolve(key)
+        if res:
+            return res
+        return default if default is not None else {}
+
+    def __contains__(self, key: object) -> bool:
+        if not isinstance(key, str) or key == "None":
+            return False
+        return key in KNOWN_KNOB_SCHEMA or key in MODEL_TO_CATEGORY
+
+
+# 모든 Helix 모델을 지원하도록 KnobSchemaDict 인스턴스로 바인딩
+KNOB_SCHEMA = KnobSchemaDict()
+
 
 
 # ==========================================
