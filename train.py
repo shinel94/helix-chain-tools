@@ -130,7 +130,7 @@ def train_loop(
     use_pretrained: bool = False,
     pretrained_model_name: str = "AST",
     freeze_backbone: bool = False,
-    use_in_memory: bool = False,
+    use_in_memory: bool = True,
     num_synthetic_samples: int = 100,
 ):
     """
@@ -203,7 +203,10 @@ def train_loop(
                 output_model_path,
             )
             print(f" -> Best Checkpoint 저장 완료! ({output_model_path})")
-
+        if use_in_memory:
+            dataloader = create_in_memory_dataloader(
+                num_samples=num_synthetic_samples, batch_size=batch_size, shuffle=True
+            )
     print(f"\n[완료] 학습이 완료되었습니다. 최저 Loss: {best_loss:.4f}")
 
 

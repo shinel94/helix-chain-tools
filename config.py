@@ -244,4 +244,4 @@ NUM_EPOCHS: int = 50
 
 # Multi-task Loss Weighting (분류 vs 회귀)
 LAMBDA_CLS: float = 1.0
-LAMBDA_REG: float = 5.0
+LAMBDA_REG: float = 10.0
