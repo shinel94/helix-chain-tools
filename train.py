@@ -127,11 +127,12 @@ def train_loop(
     num_epochs: int = config.NUM_EPOCHS,
     batch_size: int = config.BATCH_SIZE,
     lr: float = config.LEARNING_RATE,
-    use_pretrained: bool = True,
+    use_pretrained: bool = False,
     pretrained_model_name: str = "AST",
-    freeze_backbone: bool = True,
+    freeze_backbone: bool = False,
     use_in_memory: bool = True,
     num_synthetic_samples: int = 2000,
+    checkpoint_path: str = None,
 ):
     """
     Helix Tone AI 모델 훈련 시작 함수
@@ -139,6 +140,7 @@ def train_loop(
     Args:
         use_in_memory (bool): True 설정 시, 디스크 파일 읽기 없이 메모리 상에서 즉시 합성 데이터 생성 및 훈련 진행
         num_synthetic_samples (int): use_in_memory=True 일 때 생성할 합성 샘플 개수
+        checkpoint_path (str, optional): 이전 학습 상태를 복원하여 재개할 체크포인트 파일 경로 (.pth)
     """
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
     print(f"[알림] 학습 디바이스: {device}")
@@ -172,14 +174,53 @@ def train_loop(
     optimizer = optim.AdamW(trainable_params, lr=lr, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_epochs)
 
-    os.makedirs(os.path.dirname(output_model_path), exist_ok=True)
+    start_epoch = 1
     best_loss = float("inf")
+
+    # 체크포인트 로드 (학습 재개)
+    if checkpoint_path:
+        if os.path.exists(checkpoint_path):
+            print(f"[체크포인트 로드] '{checkpoint_path}'에서 학습 상태를 불러옵니다.")
+            checkpoint = torch.load(checkpoint_path, map_location=device)
+
+            if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
+                model.load_state_dict(checkpoint["model_state_dict"])
+                if "optimizer_state_dict" in checkpoint:
+                    try:
+                        optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+                    except Exception as e:
+                        print(f" -> [경고] 옵티마이저 상태 로드 실패: {e}")
+                if "scheduler_state_dict" in checkpoint:
+                    try:
+                        scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
+                    except Exception as e:
+                        print(f" -> [경고] 스케줄러 상태 로드 실패: {e}")
+
+                saved_epoch = checkpoint.get("epoch", 0)
+                start_epoch = saved_epoch + 1
+                best_loss = checkpoint.get("loss", float("inf"))
+                print(f" -> 이전 학습 {saved_epoch} 에포크 완료 지점 확인. {start_epoch} 에포크부터 재개합니다.")
+            elif isinstance(checkpoint, dict):
+                try:
+                    model.load_state_dict(checkpoint)
+                    print(f" -> 모델 가중치(state_dict) 로드 완료.")
+                except Exception as e:
+                    print(f" -> [오류] 모델 가중치 로드 실패: {e}")
+            else:
+                model.load_state_dict(checkpoint)
+                print(f" -> 모델 가중치 로드 완료.")
+        else:
+            print(f"[경고] 지정한 체크포인트 파일('{checkpoint_path}')을 찾을 수 없습니다. 1 에포크부터 처음 학습을 시작합니다.")
+
+    output_dir = os.path.dirname(output_model_path)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
 
     print("==================================================")
     print("      Helix Tone AI PyTorch Training Loop        ")
     print("==================================================")
 
-    for epoch in range(1, num_epochs + 1):
+    for epoch in range(start_epoch, num_epochs + start_epoch):
         for _ in range(5):
             loss, cls_loss, reg_loss = train_epoch(
                 model, dataloader, optimizer, criterion, device
@@ -191,7 +232,7 @@ def train_loop(
                 f"| Total Loss: {loss:.4f} | Cls Loss: {cls_loss:.4f} | Reg Loss: {reg_loss:.4f}"
             )
 
-            # Best Model Checkpoint 저장
+        # Best Model Checkpoint 저장
         if loss < best_loss:
             best_loss = loss
             torch.save(
@@ -199,6 +240,7 @@ def train_loop(
                     "epoch": epoch,
                     "model_state_dict": model.state_dict(),
                     "optimizer_state_dict": optimizer.state_dict(),
+                    "scheduler_state_dict": scheduler.state_dict(),
                     "loss": best_loss,
                 },
                 output_model_path.format(epoch=epoch),
@@ -212,9 +254,22 @@ def train_loop(
 
 
 if __name__ == "__main__":
-    # 독립 실행 시 기본 dataset 폴더에서 훈련
-    dataset_directory = "dataset"
-    if os.path.exists(dataset_directory):
-        train_loop(data_dir=dataset_directory)
-    else:
-        print(f"[안내] {dataset_directory} 폴더가 없습니다. 먼저 데이터 세트를 준비해 주세요.")
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Helix Tone AI Training")
+    parser.add_argument("--checkpoint", type=str, default=None, help="재개할 체크포인트 파일 경로 (.pth)")
+    parser.add_argument("--data_dir", type=str, default="dataset", help="데이터셋 디렉토리 경로")
+    parser.add_argument("--epochs", type=int, default=config.NUM_EPOCHS, help="총 학습 에포크 수")
+    parser.add_argument("--batch_size", type=int, default=config.BATCH_SIZE, help="배치 사이즈")
+    parser.add_argument("--lr", type=float, default=config.LEARNING_RATE, help="학습률")
+    parser.add_argument("--no_in_memory", action="store_true", help="인메모리 대신 디스크 데이터셋 사용")
+    args = parser.parse_args()
+
+    train_loop(
+        data_dir=args.data_dir,
+        num_epochs=args.epochs,
+        batch_size=args.batch_size,
+        lr=args.lr,
+        use_in_memory=not args.no_in_memory,
+        checkpoint_path=args.checkpoint,
+    )
