@@ -123,7 +123,7 @@ def train_epoch(model, dataloader, optimizer, criterion, device):
 
 def train_loop(
     data_dir: str = "dataset",
-    output_model_path: str = "checkpoints/best_helix_net.pth",
+    output_model_path: str = "checkpoints/best_helix_net_{epoch}.pth",
     num_epochs: int = config.NUM_EPOCHS,
     batch_size: int = config.BATCH_SIZE,
     lr: float = config.LEARNING_RATE,
@@ -131,7 +131,7 @@ def train_loop(
     pretrained_model_name: str = "AST",
     freeze_backbone: bool = False,
     use_in_memory: bool = True,
-    num_synthetic_samples: int = 100,
+    num_synthetic_samples: int = 10000,
 ):
     """
     Helix Tone AI 모델 훈련 시작 함수
@@ -200,10 +200,10 @@ def train_loop(
                     "optimizer_state_dict": optimizer.state_dict(),
                     "loss": best_loss,
                 },
-                output_model_path,
+                output_model_path.format(epoch=epoch),
             )
-            print(f" -> Best Checkpoint 저장 완료! ({output_model_path})")
-        if use_in_memory:
+            print(f" -> Best Checkpoint 저장 완료! ({output_model_path.format(epoch=epoch)})")
+        if epoch % 10 == 9 and use_in_memory:
             dataloader = create_in_memory_dataloader(
                 num_samples=num_synthetic_samples, batch_size=batch_size, shuffle=True
             )
