@@ -41,11 +41,11 @@ class HelixToneNet(nn.Module):
                 embed_dim=embed_dim,
                 freeze_backbone=freeze_backbone,
             )
-        else:
-            self.backbone = AudioToneBackbone(in_channels=1, embed_dim=embed_dim)
             if freeze_backbone:
                 for param in self.backbone.parameters():
                     param.requires_grad = False
+        else:
+            self.backbone = AudioToneBackbone(in_channels=1, embed_dim=embed_dim)
 
         self.slot_names = config.SLOT_NAMES
         self.num_slots = config.NUM_SLOTS

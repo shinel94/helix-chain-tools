@@ -127,9 +127,9 @@ def train_loop(
     num_epochs: int = config.NUM_EPOCHS,
     batch_size: int = config.BATCH_SIZE,
     lr: float = config.LEARNING_RATE,
-    use_pretrained: bool = False,
+    use_pretrained: bool = True,
     pretrained_model_name: str = "AST",
-    freeze_backbone: bool = False,
+    freeze_backbone: bool = True,
     use_in_memory: bool = True,
     num_synthetic_samples: int = 2000,
 ):
