@@ -131,7 +131,7 @@ def train_loop(
     pretrained_model_name: str = "AST",
     freeze_backbone: bool = False,
     use_in_memory: bool = True,
-    num_synthetic_samples: int = 10000,
+    num_synthetic_samples: int = 2000,
 ):
     """
     Helix Tone AI 모델 훈련 시작 함수
@@ -180,17 +180,18 @@ def train_loop(
     print("==================================================")
 
     for epoch in range(1, num_epochs + 1):
-        loss, cls_loss, reg_loss = train_epoch(
-            model, dataloader, optimizer, criterion, device
-        )
-        scheduler.step()
+        for _ in range(5):
+            loss, cls_loss, reg_loss = train_epoch(
+                model, dataloader, optimizer, criterion, device
+            )
+            scheduler.step()
 
-        print(
-            f"Epoch [{epoch:02d}/{num_epochs:02d}] "
-            f"| Total Loss: {loss:.4f} | Cls Loss: {cls_loss:.4f} | Reg Loss: {reg_loss:.4f}"
-        )
+            print(
+                f"Epoch [{epoch:02d}/{num_epochs:02d}] "
+                f"| Total Loss: {loss:.4f} | Cls Loss: {cls_loss:.4f} | Reg Loss: {reg_loss:.4f}"
+            )
 
-        # Best Model Checkpoint 저장
+            # Best Model Checkpoint 저장
         if loss < best_loss:
             best_loss = loss
             torch.save(
