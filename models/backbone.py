@@ -209,12 +209,26 @@ class PretrainedAudioBackbone(nn.Module):
             torch.Tensor: (B, embed_dim) 사전에 지정한 임베딩 차원의 피처
         """
         # HF 모델 입력 포맷 조정 (Spectrogram: (B, 1, F, T) -> (B, T, F))
-        if x.dim() == 4:
-            x_in = x.squeeze(1).transpose(1, 2)
-        elif x.dim() == 3:
-            x_in = x.transpose(1, 2)
+        if "ast" in self.hf_model_id.lower() or "ast" in str(type(self.encoder)).lower():
+            # AST (Audio Spectrogram Transformer)는 128 Mel Bins x 1024 Time Frames 해상도 및
+            # 1214개 고정 위치 임베딩(position_embeddings)에 맞춰 설계되어 있습니다.
+            # 입력 Spectrogram을 AST 기대 규격(128, 1024)으로 보간(Interpolate)합니다.
+            if x.dim() == 4:
+                x = F.interpolate(x, size=(128, 1024), mode="bilinear", align_corners=False)
+                x_in = x.squeeze(1).transpose(1, 2)  # (B, 1024, 128)
+            elif x.dim() == 3:
+                x_4d = x.unsqueeze(1)
+                x = F.interpolate(x_4d, size=(128, 1024), mode="bilinear", align_corners=False)
+                x_in = x.squeeze(1).transpose(1, 2)  # (B, 1024, 128)
+            else:
+                x_in = x
         else:
-            x_in = x
+            if x.dim() == 4:
+                x_in = x.squeeze(1).transpose(1, 2)
+            elif x.dim() == 3:
+                x_in = x.transpose(1, 2)
+            else:
+                x_in = x
 
         # HF 인코더 추론 (AST / Wav2Vec2 / HuBERT 입력 키워드 대응)
         try:
