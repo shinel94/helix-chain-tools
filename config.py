@@ -47,27 +47,18 @@ MODEL_CATALOG: Dict[str, List[str]] = {
         "Xenomorph Fuzz", "Megaphone", "Kinky Boost", "Deranged Master", "Minotaur", 
         "Teemah!", "Heir Apparent", "Tone Sovereign", "Alpaca Rogue", "Bitcrusher", 
         "Ampeg Scrambler", "ZeroAmp Bass DI", "Regal Bass DI", "Obsidian 7000", "Clawthorn Drive", 
-        "Tube Drive", "Screamer", "Overdrive", "Classic Dist", "Heavy Dist", "Colordrive", 
-        "Buzz Saw", "Facial Fuzz", "Jumbo Fuzz", "Fuzz Pi", "Jet Fuzz", "L6 Drive", 
-        "L6 Distortion", "Sub Oct Fuzz", "Octave Fuzz", "Bronze Master", "Killer Z"
     ],
     "Dynamics": [
         "None", "Deluxe Comp", "Red Squeeze", "Kinky Comp", "Ampeg Opto Comp", 
         "Rochester Comp", "LA Studio Comp", "3-Band Comp", "Noise Gate", "Hard Gate", 
-        "Horizon Gate", "Autoswell", "Feedbacker+", "Tube Comp", "Red Comp", "Blue Comp", 
-        "Blue Comp Treb", "Vetta Comp", "Vetta Juice", "Boost Comp"
+        "Horizon Gate", "Autoswell", "Feedbacker"
     ],
     "EQ": [
         "None", "Simple EQ", "Low and High Cut", "Low/High Shelf", "Parametric", 
         "Tilt", "10 Band Graphic", "Cali Q Graphic", "Acoustic Sim"
     ],
     "Modulation": [
-        "None", "Pitch Ring Mod", "Pattern Tremolo", "Panner", "Bias Tremolo", 
-        "Opto Tremolo", "Script Phase", "Panned Phaser", "Barberpole", "Dual Phaser", 
-        "U-Vibe", "Phaser", "Pitch Vibrato", "Dimension", "Analog Chorus", "Tri Chorus", 
-        "Analog Flanger", "Jet Flanger", "AC Flanger", "80A Flanger", "Frequency Shift", 
-        "Ring Modulator", "Rotary Drum", "Rotary Drum/Horn", "Tape Eater", "Warble-Matic", 
-        "Random S&H", "Sweeper", "Optical Trem", "60s Bias Trem", "Tremolo/Autopan", 
+        "None", "Pitch Ring Mod", "Optical Trem", "60s Bias Trem", "Tremolo/Autopan", 
         "Harmonic Tremolo", "Bleat Chop Trem", "Script Mod Phase", "Pebble Phaser", 
         "Ubiquitous Vibe", "FlexoVibe", "Deluxe Phaser", "Gray Flanger", "Harmonic Flanger", 
         "Courtesan Flange", "Dynamix Flanger", "Chorus", "70s Chorus", "PlastiChorus", 
@@ -76,34 +67,25 @@ MODEL_CATALOG: Dict[str, List[str]] = {
         "Double Take", "Poly Detune", "AM Ring Mod"
     ],
     "Delay": [
-        "None", "Stereo", "Digital", "Dig wMod", "Reverse", "Lo Res", "Tube Echo", 
-        "Tape Echo", "Sweep Echo", "Echo Platter", "Analog Echo", "Analog wMod", 
-        "Auto-Volume Echo", "Multi-Head", "Bubble Echo", "Phaze Eko", "Simple Delay", 
-        "Mod/Chorus Echo", "Dual Delay", "Multitap 4", "Multitap 6", "Ping Pong", 
+        "None", "Simple Delay", 
+        "Mod/Chorus Echo", "Dual Delay", "Multitap 4", "Multitap 6",
         "Ducked Delay", "Reverse Delay", "Vintage Digital", "Vintage Swell", "Pitch Echo", 
         "Transistor Tape", "Cosmos Echo", "Harmony Delay", "Bucket Brigade", "Adriatic Delay", 
         "Adriatic Swell", "Elephant Man", "Multi Pass", "Heliosphere", "Poly Sustain", 
-        "Glitch Delay", "Euclidean Delay", "ADT", "Crisscross", "Tesselator", "Ratchet", 
-        "Dynamic"
+        "Glitch Delay", "Euclidean Delay", "ADT", "Crisscross", "Tesselator", "Ratchet"
     ],
     "Reverb": [
         "None", "Dynamic Hall", "Dynamic Plate", "Dynamic Room", "Dynamic Ambience", 
         "Dynamic Bloom", "Shimmer", "Hot Springs", "Nonlinear", "Glitz", "Ganymede", 
-        "Searchlights", "Plateaux", "Double Tank", "Plate", "Room", "Chamber", "Hall", 
-        "Echo", "Tile", "Cave", "Ducking", "Octo", "'63 Spring", "Spring", "Particle Verb"
+        "Searchlights", "Plateaux", "Double Tank"
     ],
     "Pitch_Synth": [
         "None", "Pitch Wham", "Twin Harmony", "Simple Pitch", "Dual Pitch", "Boctaver", 
         "3 OSC Synth", "Poly Pitch", "Poly Wham", "Poly Capo", "12 String", "3 Note Generator", 
-        "4 OSC Generator", "Bass Octaver", "Smart Harmony", "Octi Synth", "Synth O Matic",
-        "Attack Synth", "Synth String", "Growler", "Buzz Wave", "Rez Synth", "Seismik Synth", 
-        "Analog Synth", "Synth Lead", "String Theory", "Synth FX", "Saturn 5 Ring Mod", 
-        "Synth Harmony", "Double Bass"
+        "4 OSC Generator"
     ],
     "Filter": [
-        "None", "Mutant Filter", "Mystery Filter", "Autofilter", "Asheville Pattrn", 
-        "Voice Box", "V Tron", "Q Filter", "Seeker", "Obi Wah", "Tron Up", "Tron Down", 
-        "Throbber", "Slow Filter", "Spin Cycle", "Comet Trails"
+        "None", "Mutant Filter", "Mystery Filter", "Autofilter", "Asheville Pattrn"
     ],
     "Wah": [
         "None", "UK Wah 846", "Teardrop 310", "Fassel", "Weeper", "Chrome", "Chrome Custom", 
@@ -240,7 +222,7 @@ KNOB_SCHEMA = defaultdict(dict, KNOWN_KNOB_SCHEMA)
 # ==========================================
 BATCH_SIZE: int = 16
 LEARNING_RATE: float = 1e-3
-NUM_EPOCHS: int = 50
+NUM_EPOCHS: int = 100
 
 # Multi-task Loss Weighting (분류 vs 회귀)
 LAMBDA_CLS: float = 1.0
